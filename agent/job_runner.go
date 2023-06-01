@@ -232,10 +232,11 @@ func NewJobRunner(l logger.Logger, scope *metrics.Scope, ag *api.AgentRegisterRe
 			// Use a scanner to process output line by line
 			err := process.NewScanner(l).ScanLines(pr, func(line string) {
 				// Send to our header streamer and determine if it's a header
-				isHeader := runner.headerTimesStreamer.Scan(line)
+				// or header expansion.
+				isHeaderOrExpansion := runner.headerTimesStreamer.Scan(line)
 
 				// Prefix non-header log lines with timestamps
-				if !(isHeaderExpansion(line) || isHeader) {
+				if !isHeaderOrExpansion {
 					line = fmt.Sprintf("[%s] %s", time.Now().UTC().Format(time.RFC3339), line)
 				}
 
